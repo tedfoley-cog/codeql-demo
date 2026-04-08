@@ -42,7 +42,7 @@ on:
       devin_user_id:
         description: 'Devin user ID to attribute sessions to (optional, requires Admin service user)'
         required: false
-        default: ''
+        default: 'email|69b041662b0ca63140b9a903'
         type: string
 
 permissions:
