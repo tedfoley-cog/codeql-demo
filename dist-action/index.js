@@ -1600,12 +1600,12 @@ const INITIAL_POLL_INTERVAL_MS = 10000; // 10 seconds
 const MAX_POLL_INTERVAL_MS = 60000; // 1 minute max
 const BACKOFF_MULTIPLIER = 1.5;
 const MAX_POLL_RETRIES = 5; // Max consecutive failures before giving up
-const MAX_TOTAL_POLL_TIME_MS = 3600000; // 1 hour max total polling time
-const MAX_BATCH_TIME_MS = 1800000; // 30 minutes max per batch
+const MAX_TOTAL_POLL_TIME_MS = 14400000; // 4 hours max total polling time
+const MAX_BATCH_TIME_MS = 3600000; // 60 minutes max per batch
 // Rate limiting and session management
 const SESSION_START_DELAY_MS = 30000; // 30 seconds between session starts
 const RATE_LIMIT_WAIT_MS = 60000; // 60 seconds wait when rate limited
-const MAX_CONCURRENT_SESSIONS = 5; // Devin's concurrent session limit
+const MAX_CONCURRENT_SESSIONS = 12; // Max concurrent session limit
 const WAIT_FOR_SLOT_POLL_MS = 5000; // 5 seconds between slot availability checks
 // CI check configuration
 const MAX_CI_ATTEMPTS = 2; // Allow Devin 2 attempts to fix CI failures
