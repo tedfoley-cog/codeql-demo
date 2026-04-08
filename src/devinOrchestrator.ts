@@ -40,12 +40,12 @@ interface DevinCreateSessionResponse {
 interface DevinSessionResponse {
   session_id: string;
   status: string;
-  status_enum: SessionStatus;
+  status_detail: string;
   created_at: string;
   updated_at: string;
   messages?: Array<{ role: string; content: string; timestamp?: string }>;
   structured_output?: DevinStructuredOutput;
-  pull_request?: { url: string };
+  pull_requests?: Array<{ url: string }>;
   title?: string;
 }
 
@@ -440,7 +440,7 @@ export class DevinOrchestrator {
       const data = await response.json() as DevinSessionResponse;
       
       // Log actual status values for debugging
-      console.log(`Session ${sessionId} status: ${data.status}, status_enum: ${data.status_enum}, progress: ${data.structured_output?.progress || 0}%`);
+      console.log(`Session ${sessionId} status: ${data.status}, status_detail: ${data.status_detail}, progress: ${data.structured_output?.progress || 0}%`);
       
       // Reset interval on successful poll
       this.pollIntervals.set(batchId, INITIAL_POLL_INTERVAL_MS);
@@ -448,10 +448,10 @@ export class DevinOrchestrator {
       return {
         sessionId: data.session_id,
         url: `https://app.devin.ai/sessions/${sessionId}`,
-        status: data.status_enum || this.mapStatus(data.status),
+        status: this.mapStatus(data.status_detail || data.status),
         batchId: batchId,
         structuredOutput: data.structured_output,
-        prUrl: data.pull_request?.url,
+        prUrl: data.pull_requests?.[0]?.url,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
         messages: (data.messages || []).map(m => ({
@@ -485,7 +485,8 @@ export class DevinOrchestrator {
       interface DevinAPIResponse {
         session_id: string;
         url?: string;
-        status_enum: string;
+        status: string;
+        status_detail: string;
         structured_output?: DevinStructuredOutput;
         created_at: string;
         updated_at: string;
@@ -497,7 +498,7 @@ export class DevinOrchestrator {
       return {
         sessionId: data.session_id,
         url: data.url || `https://app.devin.ai/sessions/${sessionId}`,
-        status: this.mapStatus(data.status_enum),
+        status: this.mapStatus(data.status_detail || data.status),
         batchId: '',
         structuredOutput: data.structured_output,
         createdAt: data.created_at,

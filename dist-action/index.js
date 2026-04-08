@@ -1927,16 +1927,16 @@ class DevinOrchestrator {
             }
             const data = await response.json();
             // Log actual status values for debugging
-            console.log(`Session ${sessionId} status: ${data.status}, status_enum: ${data.status_enum}, progress: ${data.structured_output?.progress || 0}%`);
+            console.log(`Session ${sessionId} status: ${data.status}, status_detail: ${data.status_detail}, progress: ${data.structured_output?.progress || 0}%`);
             // Reset interval on successful poll
             this.pollIntervals.set(batchId, INITIAL_POLL_INTERVAL_MS);
             return {
                 sessionId: data.session_id,
                 url: `https://app.devin.ai/sessions/${sessionId}`,
-                status: data.status_enum || this.mapStatus(data.status),
+                status: this.mapStatus(data.status_detail || data.status),
                 batchId: batchId,
                 structuredOutput: data.structured_output,
-                prUrl: data.pull_request?.url,
+                prUrl: data.pull_requests?.[0]?.url,
                 createdAt: data.created_at,
                 updatedAt: data.updated_at,
                 messages: (data.messages || []).map(m => ({
@@ -1969,7 +1969,7 @@ class DevinOrchestrator {
             return {
                 sessionId: data.session_id,
                 url: data.url || `https://app.devin.ai/sessions/${sessionId}`,
-                status: this.mapStatus(data.status_enum),
+                status: this.mapStatus(data.status_detail || data.status),
                 batchId: '',
                 structuredOutput: data.structured_output,
                 createdAt: data.created_at,
