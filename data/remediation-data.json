@@ -1255,7 +1255,7 @@
       {
         "sessionId": "19ab01f1eef843f3b6fce7a934d00135",
         "url": "https://app.devin.ai/sessions/19ab01f1eef843f3b6fce7a934d00135",
-        "status": "working",
+        "status": "pending",
         "batchId": "965262e9-f7a1-402b-a804-b5b1e9f27c24",
         "structuredOutput": null,
         "createdAt": 1775679073,
