@@ -1,13 +1,13 @@
 {
   "run": {
-    "id": "run-mnqcd478-6sz22i",
+    "id": "run-mnqcx42k-z8j0sm",
     "repository": "tedfoley-cog/vulnerable-demo-app",
-    "startedAt": "2026-04-08T17:48:11.780Z",
+    "startedAt": "2026-04-08T18:03:44.732Z",
     "status": "running",
     "config": {
       "batchingStrategy": "severity-then-cwe",
       "maxBatchSize": 5,
-      "maxParallelSessions": 3,
+      "maxParallelSessions": 1,
       "minConfidenceThreshold": 0.7,
       "severityFilter": [
         "critical",
@@ -21,7 +21,7 @@
     "alertsProcessed": 0,
     "batches": [
       {
-        "id": "8b481fc5-ed4a-4373-b2b9-ff6cf78dd91f",
+        "id": "abd325de-30b0-44d2-afd5-0a74170f5e95",
         "alerts": [
           {
             "number": 23,
@@ -203,7 +203,7 @@
         "status": "pending"
       },
       {
-        "id": "3be053e7-e899-4e8b-98c9-a990798f1dec",
+        "id": "135282be-986c-48d6-b5e2-c26136b76b7d",
         "alerts": [
           {
             "number": 26,
@@ -333,7 +333,7 @@
         "status": "pending"
       },
       {
-        "id": "7ee36744-fb08-4eda-8048-17d88c3e2d9e",
+        "id": "059e6ef6-9d5f-48ca-b963-48216cd53a3d",
         "alerts": [
           {
             "number": 18,
@@ -563,7 +563,7 @@
         "status": "pending"
       },
       {
-        "id": "405251b4-1b6c-4a05-b86c-4d8ca94c5828",
+        "id": "5666bccf-87e8-4beb-b8d1-f5e353be6349",
         "alerts": [
           {
             "number": 13,
@@ -793,7 +793,7 @@
         "status": "pending"
       },
       {
-        "id": "ec3dffb3-7fbf-4397-8a6e-dabd4e8f83f7",
+        "id": "face6f51-d488-4f69-bb1d-c86422f2bb7e",
         "alerts": [
           {
             "number": 6,
@@ -947,7 +947,7 @@
         "status": "pending"
       },
       {
-        "id": "c5678290-906a-408d-a3dd-a480a28a93a7",
+        "id": "34779e13-6002-4a13-9176-33baae32d1a9",
         "alerts": [
           {
             "number": 3,
@@ -1089,7 +1089,7 @@
         "status": "pending"
       },
       {
-        "id": "4b178163-d536-4b5f-86bb-4a104a0a5218",
+        "id": "8cab4673-810b-4903-ba69-5c1b87c1941e",
         "alerts": [
           {
             "number": 8,
@@ -1187,7 +1187,7 @@
         "status": "pending"
       },
       {
-        "id": "b45faf5f-353a-4d39-b7f3-c916d9f2e4b9",
+        "id": "6bf61da0-dd4d-48c0-a7be-eaa98beb4f42",
         "alerts": [
           {
             "number": 19,
@@ -1248,7 +1248,7 @@
         "high": 19,
         "medium": 0,
         "low": 0,
-        "timestamp": "2026-04-08T17:48:11.780Z"
+        "timestamp": "2026-04-08T18:03:44.731Z"
       }
     },
     "controlState": {
