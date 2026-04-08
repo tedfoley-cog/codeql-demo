@@ -22,7 +22,7 @@ const MAX_BATCH_TIME_MS = 3600000;       // 60 minutes max per batch
 // Rate limiting and session management
 const SESSION_START_DELAY_MS = 30000;    // 30 seconds between session starts
 const RATE_LIMIT_WAIT_MS = 60000;        // 60 seconds wait when rate limited
-const MAX_CONCURRENT_SESSIONS = 5;       // Devin's concurrent session limit
+const MAX_CONCURRENT_SESSIONS = 12;      // Max concurrent session limit
 const WAIT_FOR_SLOT_POLL_MS = 5000;      // 5 seconds between slot availability checks
 
 // CI check configuration
