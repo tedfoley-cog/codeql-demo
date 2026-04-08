@@ -1,13 +1,13 @@
 {
   "run": {
-    "id": "run-mnqcx42k-z8j0sm",
+    "id": "run-mnqdg69j-uavfys",
     "repository": "tedfoley-cog/vulnerable-demo-app",
-    "startedAt": "2026-04-08T18:03:44.732Z",
+    "startedAt": "2026-04-08T18:18:34.039Z",
     "status": "running",
     "config": {
       "batchingStrategy": "severity-then-cwe",
       "maxBatchSize": 5,
-      "maxParallelSessions": 1,
+      "maxParallelSessions": 3,
       "minConfidenceThreshold": 0.7,
       "severityFilter": [
         "critical",
@@ -21,7 +21,7 @@
     "alertsProcessed": 0,
     "batches": [
       {
-        "id": "abd325de-30b0-44d2-afd5-0a74170f5e95",
+        "id": "783fbe31-88bb-4476-8eff-8638a31ba78c",
         "alerts": [
           {
             "number": 23,
@@ -200,14 +200,10 @@
         "groupKey": "critical-CWE-078",
         "severity": "critical",
         "priority": 108,
-        "status": "in_progress",
-        "sessionId": "399ce5d5017e4ba3aa75a62f768294ad",
-        "sessionUrl": "https://app.devin.ai/sessions/399ce5d5017e4ba3aa75a62f768294ad",
-        "startedAt": "2026-04-08T18:03:54.907Z",
-        "sessionProgress": 0
+        "status": "pending"
       },
       {
-        "id": "135282be-986c-48d6-b5e2-c26136b76b7d",
+        "id": "cf90f891-ea6b-49e3-af6e-2c1b5a946695",
         "alerts": [
           {
             "number": 26,
@@ -337,7 +333,7 @@
         "status": "pending"
       },
       {
-        "id": "059e6ef6-9d5f-48ca-b963-48216cd53a3d",
+        "id": "fe666161-8ac7-49cc-8ecc-23e81a269409",
         "alerts": [
           {
             "number": 18,
@@ -567,7 +563,7 @@
         "status": "pending"
       },
       {
-        "id": "5666bccf-87e8-4beb-b8d1-f5e353be6349",
+        "id": "7189fc11-f4bd-4474-91d2-8752f5bdf3e8",
         "alerts": [
           {
             "number": 13,
@@ -797,7 +793,7 @@
         "status": "pending"
       },
       {
-        "id": "face6f51-d488-4f69-bb1d-c86422f2bb7e",
+        "id": "587c4775-9d46-4ad0-a355-73ccb6359ccc",
         "alerts": [
           {
             "number": 6,
@@ -951,7 +947,7 @@
         "status": "pending"
       },
       {
-        "id": "34779e13-6002-4a13-9176-33baae32d1a9",
+        "id": "cb7aed12-4605-4316-bc51-0e747b65eaa7",
         "alerts": [
           {
             "number": 3,
@@ -1093,7 +1089,7 @@
         "status": "pending"
       },
       {
-        "id": "8cab4673-810b-4903-ba69-5c1b87c1941e",
+        "id": "61bb9bca-605f-48c3-b6d3-b7d0e5907d28",
         "alerts": [
           {
             "number": 8,
@@ -1191,7 +1187,7 @@
         "status": "pending"
       },
       {
-        "id": "6bf61da0-dd4d-48c0-a7be-eaa98beb4f42",
+        "id": "0e8404c2-40de-4c61-8793-8fbc0e47a11f",
         "alerts": [
           {
             "number": 19,
@@ -1243,18 +1239,7 @@
         "status": "pending"
       }
     ],
-    "sessions": [
-      {
-        "sessionId": "399ce5d5017e4ba3aa75a62f768294ad",
-        "url": "https://app.devin.ai/sessions/399ce5d5017e4ba3aa75a62f768294ad",
-        "status": "working",
-        "batchId": "abd325de-30b0-44d2-afd5-0a74170f5e95",
-        "structuredOutput": null,
-        "createdAt": 1775671434,
-        "updatedAt": 1775671713,
-        "messages": []
-      }
-    ],
+    "sessions": [],
     "prsCreated": [],
     "securityPosture": {
       "before": {
@@ -1263,7 +1248,7 @@
         "high": 19,
         "medium": 0,
         "low": 0,
-        "timestamp": "2026-04-08T18:03:44.731Z"
+        "timestamp": "2026-04-08T18:18:34.039Z"
       }
     },
     "controlState": {
