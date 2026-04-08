@@ -568,7 +568,11 @@
         "groupKey": "high-CWE-307-part1",
         "severity": "high",
         "priority": 90,
-        "status": "pending"
+        "status": "in_progress",
+        "sessionId": "2ea10ea0f3ee457083ef2684abdc94e1",
+        "sessionUrl": "https://app.devin.ai/sessions/2ea10ea0f3ee457083ef2684abdc94e1",
+        "startedAt": "2026-04-08T18:19:43.158Z",
+        "sessionProgress": 0
       },
       {
         "id": "7189fc11-f4bd-4474-91d2-8752f5bdf3e8",
@@ -1264,6 +1268,15 @@
         "batchId": "cf90f891-ea6b-49e3-af6e-2c1b5a946695",
         "createdAt": "2026-04-08T18:19:12.571Z",
         "updatedAt": "2026-04-08T18:19:12.571Z",
+        "messages": []
+      },
+      {
+        "sessionId": "2ea10ea0f3ee457083ef2684abdc94e1",
+        "url": "https://app.devin.ai/sessions/2ea10ea0f3ee457083ef2684abdc94e1",
+        "status": "working",
+        "batchId": "fe666161-8ac7-49cc-8ecc-23e81a269409",
+        "createdAt": "2026-04-08T18:19:43.158Z",
+        "updatedAt": "2026-04-08T18:19:43.158Z",
         "messages": []
       }
     ],
