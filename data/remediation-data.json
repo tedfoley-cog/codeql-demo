@@ -1267,8 +1267,9 @@
         "url": "https://app.devin.ai/sessions/914cf9c90e0e495e88b9fe0427ca6751",
         "status": "working",
         "batchId": "6dd16fed-ec0f-4917-be30-8ab73a571ace",
-        "createdAt": "2026-04-08T20:11:44.533Z",
-        "updatedAt": "2026-04-08T20:11:44.533Z",
+        "structuredOutput": null,
+        "createdAt": 1775679104,
+        "updatedAt": 1775679121,
         "messages": []
       },
       {
