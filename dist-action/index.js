@@ -1594,7 +1594,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DevinOrchestrator = void 0;
 const rest_1 = __nccwpck_require__(5772);
 const prGenerator_1 = __nccwpck_require__(3242);
-const DEVIN_API_BASE = 'https://api.devin.ai/v1';
+const DEVIN_API_BASE = 'https://api.devin.ai/v3';
 // Polling configuration with exponential backoff
 const INITIAL_POLL_INTERVAL_MS = 10000; // 10 seconds
 const MAX_POLL_INTERVAL_MS = 60000; // 1 minute max
@@ -1612,7 +1612,7 @@ const MAX_CI_ATTEMPTS = 2; // Allow Devin 2 attempts to fix CI failures
 const CI_POLL_INTERVAL_MS = 30000; // Check CI status every 30 seconds
 const CI_TIMEOUT_MS = 600000; // 10 minute timeout waiting for CI
 class DevinOrchestrator {
-    constructor(apiKey, maxParallelSessions, repository, githubToken) {
+    constructor(apiKey, orgId, maxParallelSessions, repository, githubToken) {
         this.activeSessions = new Map();
         this.pollRetries = new Map();
         this.pollIntervals = new Map();
@@ -1620,6 +1620,7 @@ class DevinOrchestrator {
         this.lastSessionStartTime = 0;
         this.rateLimitHits = 0;
         this.apiKey = apiKey;
+        this.orgId = orgId;
         // Use the smaller of configured max and conservative limit to avoid hitting Devin's session limit
         this.maxParallelSessions = Math.min(maxParallelSessions, MAX_CONCURRENT_SESSIONS - 1);
         this.repository = repository;
@@ -1837,7 +1838,7 @@ class DevinOrchestrator {
     async startSessionWithRetry(batch) {
         const prompt = this.buildPrompt(batch);
         try {
-            const response = await fetch(`${DEVIN_API_BASE}/sessions`, {
+            const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${this.apiKey}`,
@@ -1904,7 +1905,7 @@ class DevinOrchestrator {
     async pollSessionWithBackoff(sessionId, batchId) {
         const currentInterval = this.pollIntervals.get(batchId) || INITIAL_POLL_INTERVAL_MS;
         try {
-            const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}`, {
+            const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}`, {
                 headers: {
                     'Authorization': `Bearer ${this.apiKey}`,
                 },
@@ -1926,16 +1927,16 @@ class DevinOrchestrator {
             }
             const data = await response.json();
             // Log actual status values for debugging
-            console.log(`Session ${sessionId} status: ${data.status}, status_enum: ${data.status_enum}, progress: ${data.structured_output?.progress || 0}%`);
+            console.log(`Session ${sessionId} status: ${data.status}, status_detail: ${data.status_detail}, progress: ${data.structured_output?.progress || 0}%`);
             // Reset interval on successful poll
             this.pollIntervals.set(batchId, INITIAL_POLL_INTERVAL_MS);
             return {
                 sessionId: data.session_id,
                 url: `https://app.devin.ai/sessions/${sessionId}`,
-                status: data.status_enum || this.mapStatus(data.status),
+                status: this.mapStatus(data.status_detail || data.status),
                 batchId: batchId,
                 structuredOutput: data.structured_output,
-                prUrl: data.pull_request?.url,
+                prUrl: data.pull_requests?.[0]?.url,
                 createdAt: data.created_at,
                 updatedAt: data.updated_at,
                 messages: (data.messages || []).map(m => ({
@@ -1955,7 +1956,7 @@ class DevinOrchestrator {
     }
     async pollSession(sessionId) {
         try {
-            const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}`, {
+            const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}`, {
                 headers: {
                     'Authorization': `Bearer ${this.apiKey}`,
                 },
@@ -1968,7 +1969,7 @@ class DevinOrchestrator {
             return {
                 sessionId: data.session_id,
                 url: data.url || `https://app.devin.ai/sessions/${sessionId}`,
-                status: this.mapStatus(data.status_enum),
+                status: this.mapStatus(data.status_detail || data.status),
                 batchId: '',
                 structuredOutput: data.structured_output,
                 createdAt: data.created_at,
@@ -1983,7 +1984,7 @@ class DevinOrchestrator {
     }
     async sendMessage(sessionId, message) {
         try {
-            const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}/message`, {
+            const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}/messages`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${this.apiKey}`,
@@ -2000,7 +2001,7 @@ class DevinOrchestrator {
     }
     async terminateSession(sessionId) {
         try {
-            const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}`, {
+            const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${this.apiKey}`,
@@ -2443,6 +2444,7 @@ const dashboardPublisher_1 = __nccwpck_require__(189);
 async function run() {
     try {
         const devinApiKey = core.getInput('devin_api_key', { required: true });
+        const devinOrgId = core.getInput('devin_org_id', { required: true });
         const githubToken = core.getInput('github_token', { required: true });
         const batchingStrategy = core.getInput('batching_strategy') || 'severity-then-cwe';
         const maxBatchSize = parseInt(core.getInput('max_batch_size') || '5', 10);
@@ -2543,7 +2545,7 @@ async function run() {
             core.setOutput('pr_count', 0);
             return;
         }
-        const devinOrchestrator = new devinOrchestrator_1.DevinOrchestrator(devinApiKey, maxParallelSessions, repository, githubToken);
+        const devinOrchestrator = new devinOrchestrator_1.DevinOrchestrator(devinApiKey, devinOrgId, maxParallelSessions, repository, githubToken);
         const confidenceScorer = new confidenceScorer_1.ConfidenceScorer(githubToken, repository, learningStore);
         const checkPaused = async () => {
             const controlState = await dashboardPublisher.readControlState();

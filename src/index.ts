@@ -19,6 +19,7 @@ import {
 async function run(): Promise<void> {
   try {
     const devinApiKey = core.getInput('devin_api_key', { required: true });
+    const devinOrgId = core.getInput('devin_org_id', { required: true });
     const githubToken = core.getInput('github_token', { required: true });
     const batchingStrategy = core.getInput('batching_strategy') as BatchingStrategy || 'severity-then-cwe';
     const maxBatchSize = parseInt(core.getInput('max_batch_size') || '5', 10);
@@ -136,7 +137,7 @@ async function run(): Promise<void> {
       return;
     }
 
-    const devinOrchestrator = new DevinOrchestrator(devinApiKey, maxParallelSessions, repository, githubToken);
+    const devinOrchestrator = new DevinOrchestrator(devinApiKey, devinOrgId, maxParallelSessions, repository, githubToken);
     const confidenceScorer = new ConfidenceScorer(githubToken, repository, learningStore);
 
     const checkPaused = async (): Promise<boolean> => {

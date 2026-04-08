@@ -9,7 +9,7 @@ import {
 } from './types';
 import { PRGenerator } from './prGenerator';
 
-const DEVIN_API_BASE = 'https://api.devin.ai/v1';
+const DEVIN_API_BASE = 'https://api.devin.ai/v3';
 
 // Polling configuration with exponential backoff
 const INITIAL_POLL_INTERVAL_MS = 10000;  // 10 seconds
@@ -40,12 +40,12 @@ interface DevinCreateSessionResponse {
 interface DevinSessionResponse {
   session_id: string;
   status: string;
-  status_enum: SessionStatus;
+  status_detail: string;
   created_at: string;
   updated_at: string;
   messages?: Array<{ role: string; content: string; timestamp?: string }>;
   structured_output?: DevinStructuredOutput;
-  pull_request?: { url: string };
+  pull_requests?: Array<{ url: string }>;
   title?: string;
 }
 
@@ -57,6 +57,7 @@ interface StartSessionResult {
 
 export class DevinOrchestrator {
   private apiKey: string;
+  private orgId: string;
   private maxParallelSessions: number;
   private activeSessions: Map<string, DevinSession> = new Map();
   private repository: string;
@@ -68,8 +69,9 @@ export class DevinOrchestrator {
   private lastSessionStartTime: number = 0;
   private rateLimitHits: number = 0;
 
-  constructor(apiKey: string, maxParallelSessions: number, repository: string, githubToken: string) {
+  constructor(apiKey: string, orgId: string, maxParallelSessions: number, repository: string, githubToken: string) {
     this.apiKey = apiKey;
+    this.orgId = orgId;
     // Use the smaller of configured max and conservative limit to avoid hitting Devin's session limit
     this.maxParallelSessions = Math.min(maxParallelSessions, MAX_CONCURRENT_SESSIONS - 1);
     this.repository = repository;
@@ -333,7 +335,7 @@ export class DevinOrchestrator {
     const prompt = this.buildPrompt(batch);
     
     try {
-      const response = await fetch(`${DEVIN_API_BASE}/sessions`, {
+      const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -411,7 +413,7 @@ export class DevinOrchestrator {
     const currentInterval = this.pollIntervals.get(batchId) || INITIAL_POLL_INTERVAL_MS;
     
     try {
-      const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}`, {
+      const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}`, {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
         },
@@ -438,7 +440,7 @@ export class DevinOrchestrator {
       const data = await response.json() as DevinSessionResponse;
       
       // Log actual status values for debugging
-      console.log(`Session ${sessionId} status: ${data.status}, status_enum: ${data.status_enum}, progress: ${data.structured_output?.progress || 0}%`);
+      console.log(`Session ${sessionId} status: ${data.status}, status_detail: ${data.status_detail}, progress: ${data.structured_output?.progress || 0}%`);
       
       // Reset interval on successful poll
       this.pollIntervals.set(batchId, INITIAL_POLL_INTERVAL_MS);
@@ -446,10 +448,10 @@ export class DevinOrchestrator {
       return {
         sessionId: data.session_id,
         url: `https://app.devin.ai/sessions/${sessionId}`,
-        status: data.status_enum || this.mapStatus(data.status),
+        status: this.mapStatus(data.status_detail || data.status),
         batchId: batchId,
         structuredOutput: data.structured_output,
-        prUrl: data.pull_request?.url,
+        prUrl: data.pull_requests?.[0]?.url,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
         messages: (data.messages || []).map(m => ({
@@ -469,7 +471,7 @@ export class DevinOrchestrator {
 
   async pollSession(sessionId: string): Promise<DevinSession | null> {
     try {
-      const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}`, {
+      const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}`, {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
         },
@@ -483,7 +485,8 @@ export class DevinOrchestrator {
       interface DevinAPIResponse {
         session_id: string;
         url?: string;
-        status_enum: string;
+        status: string;
+        status_detail: string;
         structured_output?: DevinStructuredOutput;
         created_at: string;
         updated_at: string;
@@ -495,7 +498,7 @@ export class DevinOrchestrator {
       return {
         sessionId: data.session_id,
         url: data.url || `https://app.devin.ai/sessions/${sessionId}`,
-        status: this.mapStatus(data.status_enum),
+        status: this.mapStatus(data.status_detail || data.status),
         batchId: '',
         structuredOutput: data.structured_output,
         createdAt: data.created_at,
@@ -510,7 +513,7 @@ export class DevinOrchestrator {
 
   async sendMessage(sessionId: string, message: string): Promise<boolean> {
     try {
-      const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}/message`, {
+      const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}/messages`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -528,7 +531,7 @@ export class DevinOrchestrator {
 
   async terminateSession(sessionId: string): Promise<boolean> {
     try {
-      const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}`, {
+      const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
