@@ -50,6 +50,9 @@ inputs:
     description: 'Branch to publish dashboard data to'
     required: false
     default: 'gh-pages'
+  devin_user_id:
+    description: 'Devin user ID to attribute sessions to (optional, requires service user with Admin role)'
+    required: false
   dry_run:
     description: 'If true, analyze and plan but do not create Devin sessions or PRs'
     required: false

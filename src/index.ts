@@ -137,7 +137,8 @@ async function run(): Promise<void> {
       return;
     }
 
-    const devinOrchestrator = new DevinOrchestrator(devinApiKey, devinOrgId, maxParallelSessions, repository, githubToken);
+    const devinUserId = core.getInput('devin_user_id') || undefined;
+    const devinOrchestrator = new DevinOrchestrator(devinApiKey, devinOrgId, maxParallelSessions, repository, githubToken, devinUserId);
     const confidenceScorer = new ConfidenceScorer(githubToken, repository, learningStore);
 
     const checkPaused = async (): Promise<boolean> => {

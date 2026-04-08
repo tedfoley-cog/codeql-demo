@@ -58,6 +58,7 @@ interface StartSessionResult {
 export class DevinOrchestrator {
   private apiKey: string;
   private orgId: string;
+  private userId?: string;
   private maxParallelSessions: number;
   private activeSessions: Map<string, DevinSession> = new Map();
   private repository: string;
@@ -69,9 +70,10 @@ export class DevinOrchestrator {
   private lastSessionStartTime: number = 0;
   private rateLimitHits: number = 0;
 
-  constructor(apiKey: string, orgId: string, maxParallelSessions: number, repository: string, githubToken: string) {
+  constructor(apiKey: string, orgId: string, maxParallelSessions: number, repository: string, githubToken: string, userId?: string) {
     this.apiKey = apiKey;
     this.orgId = orgId;
+    this.userId = userId;
     // Use the smaller of configured max and conservative limit to avoid hitting Devin's session limit
     this.maxParallelSessions = Math.min(maxParallelSessions, MAX_CONCURRENT_SESSIONS - 1);
     this.repository = repository;
@@ -345,6 +347,7 @@ export class DevinOrchestrator {
           prompt,
           title: `CodeQL Fix: ${batch.groupKey}`,
           tags: ['codeql-remediation', batch.severity, batch.groupKey],
+          ...(this.userId ? { create_as_user_id: this.userId } : {}),
         }),
       });
 

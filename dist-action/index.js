@@ -1612,7 +1612,7 @@ const MAX_CI_ATTEMPTS = 2; // Allow Devin 2 attempts to fix CI failures
 const CI_POLL_INTERVAL_MS = 30000; // Check CI status every 30 seconds
 const CI_TIMEOUT_MS = 600000; // 10 minute timeout waiting for CI
 class DevinOrchestrator {
-    constructor(apiKey, orgId, maxParallelSessions, repository, githubToken) {
+    constructor(apiKey, orgId, maxParallelSessions, repository, githubToken, userId) {
         this.activeSessions = new Map();
         this.pollRetries = new Map();
         this.pollIntervals = new Map();
@@ -1621,6 +1621,7 @@ class DevinOrchestrator {
         this.rateLimitHits = 0;
         this.apiKey = apiKey;
         this.orgId = orgId;
+        this.userId = userId;
         // Use the smaller of configured max and conservative limit to avoid hitting Devin's session limit
         this.maxParallelSessions = Math.min(maxParallelSessions, MAX_CONCURRENT_SESSIONS - 1);
         this.repository = repository;
@@ -1848,6 +1849,7 @@ class DevinOrchestrator {
                     prompt,
                     title: `CodeQL Fix: ${batch.groupKey}`,
                     tags: ['codeql-remediation', batch.severity, batch.groupKey],
+                    ...(this.userId ? { create_as_user_id: this.userId } : {}),
                 }),
             });
             // Handle specific error cases
@@ -2545,7 +2547,8 @@ async function run() {
             core.setOutput('pr_count', 0);
             return;
         }
-        const devinOrchestrator = new devinOrchestrator_1.DevinOrchestrator(devinApiKey, devinOrgId, maxParallelSessions, repository, githubToken);
+        const devinUserId = core.getInput('devin_user_id') || undefined;
+        const devinOrchestrator = new devinOrchestrator_1.DevinOrchestrator(devinApiKey, devinOrgId, maxParallelSessions, repository, githubToken, devinUserId);
         const confidenceScorer = new confidenceScorer_1.ConfidenceScorer(githubToken, repository, learningStore);
         const checkPaused = async () => {
             const controlState = await dashboardPublisher.readControlState();
