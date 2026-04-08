@@ -1,6 +1,6 @@
 name: 'CodeQL Remediation Orchestrator'
 description: 'Automatically fix CodeQL security issues using Devin AI with intelligent batching and real-time dashboard'
-author: 'Your Name'
+author: 'tedfoley-cog'
 
 branding:
   icon: 'shield'
