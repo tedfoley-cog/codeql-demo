@@ -67,7 +67,7 @@ jobs:
     
     steps:
       - name: Run CodeQL Remediation
-        uses: your-org/codeql-remediation-orchestrator@v1
+        uses: tedfoley-cog/codeql-demo@main
         with:
           devin_api_key: ${{ secrets.DEVIN_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -275,4 +275,4 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 For questions or issues:
 - Open a GitHub issue
-- Email: support@example.com
+- Open a discussion in the repository
