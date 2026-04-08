@@ -9,7 +9,7 @@ import {
 } from './types';
 import { PRGenerator } from './prGenerator';
 
-const DEVIN_API_BASE = 'https://api.devin.ai/v1';
+const DEVIN_API_BASE = 'https://api.devin.ai/v3';
 
 // Polling configuration with exponential backoff
 const INITIAL_POLL_INTERVAL_MS = 10000;  // 10 seconds
@@ -57,6 +57,7 @@ interface StartSessionResult {
 
 export class DevinOrchestrator {
   private apiKey: string;
+  private orgId: string;
   private maxParallelSessions: number;
   private activeSessions: Map<string, DevinSession> = new Map();
   private repository: string;
@@ -68,8 +69,9 @@ export class DevinOrchestrator {
   private lastSessionStartTime: number = 0;
   private rateLimitHits: number = 0;
 
-  constructor(apiKey: string, maxParallelSessions: number, repository: string, githubToken: string) {
+  constructor(apiKey: string, orgId: string, maxParallelSessions: number, repository: string, githubToken: string) {
     this.apiKey = apiKey;
+    this.orgId = orgId;
     // Use the smaller of configured max and conservative limit to avoid hitting Devin's session limit
     this.maxParallelSessions = Math.min(maxParallelSessions, MAX_CONCURRENT_SESSIONS - 1);
     this.repository = repository;
@@ -333,7 +335,7 @@ export class DevinOrchestrator {
     const prompt = this.buildPrompt(batch);
     
     try {
-      const response = await fetch(`${DEVIN_API_BASE}/sessions`, {
+      const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -411,7 +413,7 @@ export class DevinOrchestrator {
     const currentInterval = this.pollIntervals.get(batchId) || INITIAL_POLL_INTERVAL_MS;
     
     try {
-      const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}`, {
+      const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}`, {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
         },
@@ -469,7 +471,7 @@ export class DevinOrchestrator {
 
   async pollSession(sessionId: string): Promise<DevinSession | null> {
     try {
-      const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}`, {
+      const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}`, {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
         },
@@ -510,7 +512,7 @@ export class DevinOrchestrator {
 
   async sendMessage(sessionId: string, message: string): Promise<boolean> {
     try {
-      const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}/message`, {
+      const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}/messages`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -528,7 +530,7 @@ export class DevinOrchestrator {
 
   async terminateSession(sessionId: string): Promise<boolean> {
     try {
-      const response = await fetch(`${DEVIN_API_BASE}/sessions/${sessionId}`, {
+      const response = await fetch(`${DEVIN_API_BASE}/organizations/${this.orgId}/sessions/${sessionId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,

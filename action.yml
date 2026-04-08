@@ -8,7 +8,10 @@ branding:
 
 inputs:
   devin_api_key:
-    description: 'Devin API key for authentication'
+    description: 'Devin API key for authentication (cog_ prefixed service user key for v3 API)'
+    required: true
+  devin_org_id:
+    description: 'Devin organization ID (found at Settings > Service Users in app.devin.ai)'
     required: true
   github_token:
     description: 'GitHub token with security_events and repo scope'
