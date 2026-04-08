@@ -1601,7 +1601,7 @@ const MAX_POLL_INTERVAL_MS = 60000; // 1 minute max
 const BACKOFF_MULTIPLIER = 1.5;
 const MAX_POLL_RETRIES = 5; // Max consecutive failures before giving up
 const MAX_TOTAL_POLL_TIME_MS = 3600000; // 1 hour max total polling time
-const MAX_BATCH_TIME_MS = 1800000; // 30 minutes max per batch
+const MAX_BATCH_TIME_MS = 3600000; // 60 minutes max per batch
 // Rate limiting and session management
 const SESSION_START_DELAY_MS = 30000; // 30 seconds between session starts
 const RATE_LIMIT_WAIT_MS = 60000; // 60 seconds wait when rate limited
