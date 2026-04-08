@@ -2663,6 +2663,13 @@ class LearningStoreManager {
                 if (!this.store.version) {
                     this.store = this.migrateStore(this.store);
                 }
+                // Ensure essential fields exist even if not present in stored data
+                if (!this.store.records) {
+                    this.store.records = [];
+                }
+                if (!this.store.patterns) {
+                    this.store.patterns = {};
+                }
             }
         }
         catch (error) {
